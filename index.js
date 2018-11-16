@@ -6,7 +6,9 @@ import {
     View,
     Text,
     ActivityIndicator,
-    FlatList
+    FlatList,
+    PermissionsAndroid,
+    Alert
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -27,8 +29,42 @@ class CameraRollPicker extends Component {
         }
     }
 
+    _requestPermission = () => {
+        PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+        )
+            .then(granted => {
+                if (granted) {
+                    this.fetch()
+                } else {
+                    Alert.alert(
+                        'Permissão não concedida',
+                        'Sem a permissão de acesso ao armazenamento você não vai conseguir selecionar as fotos!'
+                    )
+                }
+            })
+            .catch(err => {
+                Alert.alert(
+                    'Permissão não concedida',
+                    'Sem a permissão de acesso ao armazenamento você não vai conseguir selecionar as fotos!'
+                )
+            })
+    }
+
     componentWillMount() {
-        this.fetch()
+        if (Platform.OS == 'ios') {
+            this.fetch()
+        } else {
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+            ).then(granted => {
+                if (granted) {
+                    this.fetch()
+                } else {
+                    this._requestPermission()
+                }
+            })
+        }
     }
 
     fetch() {
