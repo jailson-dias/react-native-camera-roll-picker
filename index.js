@@ -202,7 +202,7 @@ class CameraRollPicker extends Component {
             // remove from selected images
             var indexInSelectedImages = selectedImages
                 .map(img => img.uri)
-                .indexOf(images[index].uri)
+                .indexOf(images[index].node.image.uri)
             selectedImages.splice(indexInSelectedImages, 1)
         } else {
             if (selectSingleItem) {
