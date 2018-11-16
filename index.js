@@ -92,7 +92,9 @@ class CameraRollPicker extends Component {
             backgroundColor,
             emptyText,
             emptyTextStyle,
-            loader
+            loader,
+            listHeader,
+            listEmpty
         } = this.props
 
         if (this.state.initialLoading) {
@@ -111,6 +113,8 @@ class CameraRollPicker extends Component {
                     keyExtractor={(item, index) => `rncrp_item_${index}`}
                     initialNumToRender={pageSize * initialListSize}
                     removeClippedSubviews={removeClippedSubviews}
+                    ListHeaderComponent={listHeader}
+                    ListEmptyComponent={listEmpty}
                     ListFooterComponent={this._renderFooterSpinner.bind(this)}
                     onEndReached={this._onEndReached.bind(this)}
                     data={images}
@@ -293,7 +297,9 @@ CameraRollPicker.propTypes = {
     emptyTextStyle: Text.propTypes.style,
     loader: PropTypes.node,
     ratio: PropTypes.number,
-    callbackMaximum: PropTypes.func
+    callbackMaximum: PropTypes.func,
+    listEmpty: PropTypes.func || PropTypes.element || PropTypes.node,
+    listHeader: PropTypes.func || PropTypes.element || PropTypes.node
 }
 
 CameraRollPicker.defaultProps = {
