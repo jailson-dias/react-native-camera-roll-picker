@@ -242,15 +242,16 @@ class CameraRollPicker extends Component {
             selectedImages.splice(indexInSelectedImages, 1)
         } else {
             if (selectSingleItem) {
-                selected.splice(0, selected.length)
-                selectedImages.splice(0, indexInSelectedImages)
-            }
-            if (selected.length < maximum) {
-                selected.push(index)
-                selectedImages.push(image)
+                selected = [index]
+                selectedImages = [image]
             } else {
-                // maximo
-                if (callbackMaximum) callbackMaximum()
+                if (selected.length < maximum) {
+                    selected.push(index)
+                    selectedImages.push(image)
+                } else {
+                    // maximum
+                    if (callbackMaximum) callbackMaximum()
+                }
             }
         }
 
