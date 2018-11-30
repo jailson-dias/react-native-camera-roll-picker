@@ -29,6 +29,19 @@ class CameraRollPicker extends Component {
         }
     }
 
+    static _getAlbuns = () => {
+        return CameraRoll.getPhotos({
+            first: 10000,
+            assetType: 'Photos'
+        })
+            .then(ress => {
+                return [...new Set(ress.edges.map(a => a.node.group_name))]
+            })
+            .catch(err => {
+                return err
+            })
+    }
+
     _requestPermission = () => {
         PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
