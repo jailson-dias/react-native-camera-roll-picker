@@ -182,7 +182,7 @@ class CameraRollPicker extends Component {
                 style={[
                     styles.wrapper,
                     {
-                        padding: imageMargin,
+//                         padding: imageMargin,
                         paddingRight: 0,
                         backgroundColor: backgroundColor
                     }
@@ -210,6 +210,7 @@ class CameraRollPicker extends Component {
             <ImageItem
                 key={uri}
                 item={item}
+                index={index}
                 selected={isSelected}
                 imageMargin={imageMargin}
                 selectedMarker={selectedMarker}
