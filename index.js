@@ -80,21 +80,27 @@ class CameraRollPicker extends Component {
         }
     }
 
-    fetch() {
+    componentDidUpdate(prevProps) {
+        if (prevProps.groupName !== this.props.groupName)
+            this.fetch(true)
+    }
+
+    fetch(updated) {
         if (!this.state.loadingMore) {
             this.setState({ loadingMore: true }, () => {
-                this._fetch()
+                this._fetch(updated)
             })
         }
     }
 
-    _fetch() {
-        var { groupTypes, assetType } = this.props
+    _fetch(updated) {
+        var { groupTypes, groupName, assetType } = this.props
 
         var fetchParams = {
             first: 1000,
-            groupTypes: groupTypes,
-            assetType: assetType
+            groupTypes,
+            groupName,
+            assetType
         }
 
         if (Platform.OS === 'android') {
@@ -102,31 +108,33 @@ class CameraRollPicker extends Component {
             delete fetchParams.groupTypes
         }
 
-        if (this.state.lastCursor) {
+        if (this.state.lastCursor && !updated) {
             fetchParams.after = this.state.lastCursor
         }
 
         CameraRoll.getPhotos(fetchParams).then(
-            data => this._appendImages(data),
+            data => this._appendImages(data, updated),
             e => console.log(e)
         )
     }
 
-    _appendImages(data) {
+    _appendImages(data, updated) {
         var assets = data.edges
         var newState = {
             loadingMore: false,
             initialLoading: false
         }
 
-        if (!data.page_info.has_next_page) {
-            newState.noMore = true
-        }
-
-        if (assets.length > 0) {
-            newState.lastCursor = data.page_info.end_cursor
+        newState.noMore = !data.page_info.has_next_page
+        if (updated) {
+            newState.selected = []
+            newState.selectedImages = this.props.selected
+            newState.images = [...assets]
+        } else {
             newState.images = this.state.images.concat(assets)
         }
+        if (assets.length > 0)
+            newState.lastCursor = data.page_info.end_cursor
 
         this.setState(newState)
     }
@@ -172,17 +180,17 @@ class CameraRollPicker extends Component {
                     }
                 />
             ) : (
-                <Text style={[{ textAlign: 'center' }, emptyTextStyle]}>
-                    {emptyText}
-                </Text>
-            )
+                    <Text style={[{ textAlign: 'center' }, emptyTextStyle]}>
+                        {emptyText}
+                    </Text>
+                )
 
         return (
             <View
                 style={[
                     styles.wrapper,
                     {
-//                         padding: imageMargin,
+                        //                         padding: imageMargin,
                         paddingRight: 0,
                         backgroundColor: backgroundColor
                     }
@@ -334,6 +342,7 @@ CameraRollPicker.propTypes = {
         'PhotoStream',
         'SavedPhotos'
     ]),
+    groupName: PropTypes.string,
     maximum: PropTypes.number,
     assetType: PropTypes.oneOf(['Photos', 'Videos', 'All']),
     selectSingleItem: PropTypes.bool,
@@ -366,13 +375,13 @@ CameraRollPicker.defaultProps = {
     assetType: 'Photos',
     backgroundColor: 'white',
     selected: [],
-    callback: function(selectedImages, currentImage) {
+    callback: function (selectedImages, currentImage) {
         console.log(currentImage)
         console.log(selectedImages)
     },
     emptyText: 'No photos.',
     ratio: 1,
-    callbackMaximum: function() {
+    callbackMaximum: function () {
         console.log('You have already selected all the photos allowed')
     }
 }
