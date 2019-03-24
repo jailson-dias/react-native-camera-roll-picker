@@ -94,7 +94,7 @@ class CameraRollPicker extends Component {
     }
 
     _fetch(updated) {
-        var { groupTypes, groupName, assetType } = this.props
+        var { groupTypes, groupName, requestAlbums, assetType } = this.props
 
         var fetchParams = {
             first: 1000,
@@ -113,7 +113,11 @@ class CameraRollPicker extends Component {
         }
 
         CameraRoll.getPhotos(fetchParams).then(
-            data => this._appendImages(data, updated),
+            data => {
+                if (this.state.images.length === 0 && !updated)
+                    requestAlbums()
+                this._appendImages(data, updated)
+            },
             e => console.log(e)
         )
     }
@@ -343,6 +347,7 @@ CameraRollPicker.propTypes = {
         'SavedPhotos'
     ]),
     groupName: PropTypes.string,
+    requestAlbums: PropTypes.func,
     maximum: PropTypes.number,
     assetType: PropTypes.oneOf(['Photos', 'Videos', 'All']),
     selectSingleItem: PropTypes.bool,
