@@ -86,7 +86,7 @@ class CameraRollPicker extends Component {
     }
 
     fetch(updated) {
-        if (!this.state.loadingMore) {
+        if (!this.state.loadingMore || updated) {
             this.setState({ loadingMore: true }, () => {
                 this._fetch(updated)
             })
