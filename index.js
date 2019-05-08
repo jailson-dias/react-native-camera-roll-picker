@@ -107,6 +107,8 @@ class CameraRollPicker extends Component {
             // not supported in android
             delete fetchParams.groupTypes
         }
+        
+        if (!groupName) delete fetchParams.groupName
 
         if (this.state.lastCursor && !updated) {
             fetchParams.after = this.state.lastCursor
